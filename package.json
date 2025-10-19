@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-plugin-getui",
+  "name": "@vaecebyz/capacitor-getui",
   "version": "0.0.12",
   "description": "个推",
   "main": "dist/plugin.cjs.js",
@@ -13,14 +13,18 @@
     "ios/Plugin/",
     "CapacitorPluginGetui.podspec"
   ],
-  "author": "yufu",
+  "author": "vaecebyZ",
+  "contributors": [
+    "Original author: yufu (unmaintained)",
+    "Current maintainer: vaecebyZ"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://gitee.com/3433/capacitor-plugin-getui.git"
+    "url": "git+https://github.com/vaecebyZ/capacitor-getui.git"
   },
   "bugs": {
-    "url": "https://gitee.com/3433/capacitor-plugin-getui/issues"
+    "url": "https://github.com/vaecebyZ/capacitor-getui/issues"
   },
   "keywords": [
     "capacitor",
@@ -32,6 +36,7 @@
     "verify:ios": "cd ios && pod install && xcodebuild -workspace Plugin.xcworkspace -scheme Plugin && cd ..",
     "verify:android": "cd android && ./gradlew clean build test && cd ..",
     "verify:web": "npm run build",
+    "clean:gradle": "rm -rf $HOME/.gradle/wrapper/dists/gradle-7.0-all*",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
     "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix --format",
     "eslint": "eslint . --ext ts",
@@ -64,6 +69,9 @@
   },
   "peerDependencies": {
     "@capacitor/core": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
