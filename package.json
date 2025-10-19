@@ -10,8 +10,8 @@
     "android/src/main/",
     "android/build.gradle",
     "dist/",
-    "ios/Plugin/",
-    "CapacitorPluginGetui.podspec"
+  "ios/Plugin/",
+  "VaecebyzCapacitorGetui.podspec"
   ],
   "author": "vaecebyZ",
   "contributors": [
