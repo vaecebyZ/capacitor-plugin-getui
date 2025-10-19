@@ -1,6 +1,6 @@
 {
   "name": "@vaecebyz/capacitor-getui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Capacitor Getui Plugin",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
