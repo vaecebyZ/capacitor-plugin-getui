@@ -1,6 +1,6 @@
 {
   "name": "@vaecebyz/capacitor-getui",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "description": "个推",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

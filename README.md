@@ -11,32 +11,50 @@ npx cap sync
 
 > 本包基于原 `capacitor-plugin-getui` 演进，原作者已不再维护；现由 `vaecebyZ` 继续维护。保留原 MIT 许可归属。
 
-## API
+## 快速使用（JS/TS）
 
-<docgen-index>
+```ts
+import { Getui } from '@vaecebyz/capacitor-getui';
 
-* [`echo(...)`](#echo)
-
-</docgen-index>
-
-<docgen-api>
-<!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
-
-### echo(...)
-
-```typescript
-echo(options: { value: string; }) => any
+async function bootstrap() {
+	await Getui.init();
+	const { client_id } = await Getui.getClientId();
+	console.log('CID', client_id);
+	Getui.addListener('onReceiveMessageData', d => console.log('透传', d));
+}
 ```
 
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
+## 可用方法
 
-**Returns:** <code>any</code>
+| 方法 | 说明 |
+| ---- | ---- |
+| `echo({ value })` | 调试回显 |
+| `init()` | 初始化 SDK，返回版本与 clientId |
+| `getVersion()` | 获取 SDK 版本 |
+| `getClientId()` | 获取 clientId |
+| `setTag({ tags, sn? })` | 设置标签 |
+| `turnOnPush()` / `turnOffPush()` | 开/关推送 |
+| `setSilentTime({ begin_hour, duration })` | 设置静默时段（小时） |
+| `isPushTurnedOn()` | 推送是否开启 |
+| `areNotificationsEnabled()` | 系统通知权限是否开启 |
+| `openNotification()` | 打开系统通知设置页 |
+| `setHwBadgeNum({ num })` | 华为角标 |
+| `setOPPOBadgeNum({ num })` | OPPO 角标 |
+| `setVivoAppBadgeNum({ num })` | vivo 角标 |
 
---------------------
+## 事件
 
-</docgen-api>
+| 事件名 | 说明 | 数据示例 |
+| ------ | ---- | -------- |
+| `onReceiveClientId` | 获取/更新 CID 或在线状态 | `{ client_id?: string, online?: boolean }` |
+| `onReceiveMessageData` | 透传消息 | `{ appid, cid, taskid, messageid, payload? }` |
+| `localNotificationReceived` | 预留通知到达（扩展用） | 自定义 |
+
+## Web 环境
+Web 上方法多数返回默认值或直接 reject，不会抛出未定义。请使用 `Capacitor.isNativePlatform()` 判定。
+
+## Changelog
+详见 [CHANGELOG.md](./CHANGELOG.md)
 
 ## Troubleshooting
 
