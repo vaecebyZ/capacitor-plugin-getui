@@ -1,6 +1,6 @@
 {
   "name": "@vaecebyz/capacitor-getui",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "个推",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -10,8 +10,8 @@
     "android/src/main/",
     "android/build.gradle",
     "dist/",
-  "ios/Plugin/",
-  "VaecebyzCapacitorGetui.podspec"
+    "ios/Plugin/",
+    "VaecebyzCapacitorGetui.podspec"
   ],
   "author": "vaecebyZ",
   "contributors": [
