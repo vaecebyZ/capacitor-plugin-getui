@@ -1,0 +1,40 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.yufu.plugin.getui">
+
+  <queries>
+    <intent>
+      <action android:name="com.getui.sdk.action" />
+    </intent>
+  </queries>
+
+
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.GET_TASKS" />
+  <uses-permission android:name="getui.permission.GetuiService.${applicationId}" />
+
+  <permission android:name="getui.permission.GetuiService.${applicationId}" android:protectionLevel="signature" />
+
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+  <uses-permission android:name="com.vivo.notification.permission.BADGE_ICON" />
+  <uses-permission android:name="android.permission.BLUETOOTH" />
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+
+  <application android:allowBackup="true" android:label="@string/app_name" android:usesCleartextTraffic="true" tools:ignore="GoogleAppIndexingWarning" tools:targetApi="m">
+
+    <service android:name="com.yufu.plugin.getui.GetuiPushService" android:exported="false" android:label="PushService" android:process=":pushservice" />
+
+    <service android:name="com.yufu.plugin.getui.GetuiIntentService" />
+
+    <meta-data android:name="GETUI_APPID" android:value="${GETUI_APPID}" tools:replace="android:value" />
+  </application>
+</manifest>
