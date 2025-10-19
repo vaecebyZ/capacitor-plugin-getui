@@ -173,7 +173,8 @@ public class GetuiPlugin extends Plugin {
   @PluginMethod
   public void setSilentTime(PluginCall call) {
     Integer beginHour = call.getInt("begin_hour", 0);
-    Integer duration = call.getInt("begin_hour", 0);
+    // Bug fix: duration 应该读取 duration 参数而不是 begin_hour
+    Integer duration = call.getInt("duration", 0);
     assert (beginHour != null && duration != null);
     pushManager.setSilentTime(staticContext, beginHour, duration);
     JSObject ret = new JSObject();
