@@ -1,4 +1,4 @@
-package com.yufu.plugin.getui;
+package com.vaecebyz.capacitor.getui;
 
 import com.igexin.sdk.PushService;
 

@@ -1,4 +1,4 @@
-package com.yufu.plugin.getui;
+package com.vaecebyz.capacitor.getui;
 
 import android.content.Context;
 
@@ -7,7 +7,7 @@ import com.igexin.sdk.GTIntentService;
 import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTNotificationMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
-
+import com.getcapacitor.Logger;
 import org.json.JSONException;
 
 public class GetuiIntentService extends GTIntentService {

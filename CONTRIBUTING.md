@@ -49,10 +49,4 @@ There is a `prepublishOnly` hook in `package.json` which prepares the plugin bef
 npm publish
 ```
 
-## 发布新版本
-
-```shell
-npm run release -- patch -m "修改 build.gradle"
-```
-
 > **Note**: The [`files`](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#files) array in `package.json` specifies which files get published. If you rename files/directories or add files elsewhere, you may need to update it.

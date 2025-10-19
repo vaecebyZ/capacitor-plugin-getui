@@ -1,6 +1,6 @@
 # @vaecebyz/capacitor-getui
 
-个推
+getui
 
 ## Install
 
@@ -9,103 +9,316 @@ npm install @vaecebyz/capacitor-getui
 npx cap sync
 ```
 
-> 本包基于原 `capacitor-plugin-getui` 演进，原作者已不再维护；现由 `vaecebyZ` 继续维护。保留原 MIT 许可归属。
+## API
 
-## 快速使用（JS/TS）
+<docgen-index>
 
-```ts
-import { Getui } from '@vaecebyz/capacitor-getui';
+* [`echo(...)`](#echo)
+* [`init()`](#init)
+* [`getVersion()`](#getversion)
+* [`getClientId()`](#getclientid)
+* [`setTag(...)`](#settag)
+* [`turnOnPush()`](#turnonpush)
+* [`turnOffPush()`](#turnoffpush)
+* [`setSilentTime(...)`](#setsilenttime)
+* [`isPushTurnedOn()`](#ispushturnedon)
+* [`areNotificationsEnabled()`](#arenotificationsenabled)
+* [`openNotification()`](#opennotification)
+* [`setHwBadgeNum(...)`](#sethwbadgenum)
+* [`setOPPOBadgeNum(...)`](#setoppobadgenum)
+* [`setVivoAppBadgeNum(...)`](#setvivoappbadgenum)
+* [`addListener('onReceiveClientId', ...)`](#addlisteneronreceiveclientid-)
+* [`addListener('onReceiveMessageData', ...)`](#addlisteneronreceivemessagedata-)
+* [`addListener('localNotificationReceived', ...)`](#addlistenerlocalnotificationreceived-)
+* [`addListener(string, ...)`](#addlistenerstring-)
+* [Interfaces](#interfaces)
 
-async function bootstrap() {
-	await Getui.init();
-	const { client_id } = await Getui.getClientId();
-	console.log('CID', client_id);
-	Getui.addListener('onReceiveMessageData', d => console.log('透传', d));
-}
+</docgen-index>
+
+<docgen-api>
+<!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+TypeScript definitions mapping to native @PluginMethod methods in GetuiPlugin.java
+
+### echo(...)
+
+```typescript
+echo(options: { value: string; }) => any
 ```
 
-## 可用方法
+原样返回输入，调试用
 
-| 方法 | 说明 |
-| ---- | ---- |
-| `echo({ value })` | 调试回显 |
-| `init()` | 初始化 SDK，返回版本与 clientId |
-| `getVersion()` | 获取 SDK 版本 |
-| `getClientId()` | 获取 clientId |
-| `setTag({ tags, sn? })` | 设置标签 |
-| `turnOnPush()` / `turnOffPush()` | 开/关推送 |
-| `setSilentTime({ begin_hour, duration })` | 设置静默时段（小时） |
-| `isPushTurnedOn()` | 推送是否开启 |
-| `areNotificationsEnabled()` | 系统通知权限是否开启 |
-| `openNotification()` | 打开系统通知设置页 |
-| `setHwBadgeNum({ num })` | 华为角标 |
-| `setOPPOBadgeNum({ num })` | OPPO 角标 |
-| `setVivoAppBadgeNum({ num })` | vivo 角标 |
+| Param         | Type                            |
+| ------------- | ------------------------------- |
+| **`options`** | <code>{ value: string; }</code> |
 
-## 事件
+**Returns:** <code>any</code>
 
-| 事件名 | 说明 | 数据示例 |
-| ------ | ---- | -------- |
-| `onReceiveClientId` | 获取/更新 CID 或在线状态 | `{ client_id?: string, online?: boolean }` |
-| `onReceiveMessageData` | 透传消息 | `{ appid, cid, taskid, messageid, payload? }` |
-| `localNotificationReceived` | 预留通知到达（扩展用） | 自定义 |
+--------------------
 
-## Web 环境
-Web 上方法多数返回默认值或直接 reject，不会抛出未定义。请使用 `Capacitor.isNativePlatform()` 判定。
 
-## Changelog
-详见 [CHANGELOG.md](./CHANGELOG.md)
+### init()
 
-## Troubleshooting
-
-### Android Gradle wrapper zip error
-
-If you see an error like:
-
-```
-Could not unzip .../gradle-7.0-all.zip
-Reason: zip END header not found
-java.util.zip.ZipException: zip END header not found
+```typescript
+init() => any
 ```
 
-It usually means the cached Gradle distribution zip is corrupted (often due to an interrupted download). Fix it by deleting the broken folder and re-running the build so Gradle re-downloads a fresh copy:
+初始化个推 SDK，返回版本与当前 clientId（若已生成）
 
-```bash
-rm -rf "$HOME/.gradle/wrapper/dists/gradle-7.0-all"*
-cd android && ./gradlew --refresh-dependencies tasks && cd ..
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### getVersion()
+
+```typescript
+getVersion() => any
 ```
 
-Or use the provided npm script (after we add it):
+获取当前 SDK 版本
 
-```bash
-npm run clean:gradle && npm run verify:android
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### getClientId()
+
+```typescript
+getClientId() => any
 ```
 
-### 当前使用的版本
+获取当前设备 clientId
 
-本插件仓库现已固定：
+**Returns:** <code>any</code>
 
-```
-Gradle Wrapper: 6.7.1
-Android Gradle Plugin: 4.1.3 (在 `android/build.gradle` 中)
-JDK: 11 (sdkman 对应 `java=11.0.28-amzn`)
-```
+--------------------
 
-这一组合是 AGP 4.1.x 官方支持范围（Gradle ≤6.8.x，JDK 8~11）。避免使用 JDK 17+ 或 Gradle 7+ 以免出现 `Unsupported class file major version`。
 
-如果后续需要升级：
+### setTag(...)
 
-1. 升级到 AGP 7.x 及以上 → 需要 Gradle 7.x 且至少 JDK 11。
-2. 继续保持 AGP 4.1.x → 保持 Gradle 6.x（推荐 ≤6.8.3）与 JDK 8~11。
-
-修改 Gradle 版本只需编辑 `android/gradle/wrapper/gradle-wrapper.properties`，然后重新运行 `./gradlew --version` 验证。
-
-### Clearing Gradle caches fully
-
-If problems persist:
-
-```bash
-rm -rf "$HOME/.gradle/caches" "$HOME/.gradle/wrapper/dists" && cd android && ./gradlew build && cd ..
+```typescript
+setTag(options: { tags: string[]; sn?: string; }) => any
 ```
 
-This forces complete redownload of dependencies.
+设置标签
+
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ tags: {}; sn?: string; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### turnOnPush()
+
+```typescript
+turnOnPush() => any
+```
+
+打开推送
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### turnOffPush()
+
+```typescript
+turnOffPush() => any
+```
+
+关闭推送
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### setSilentTime(...)
+
+```typescript
+setSilentTime(options: { begin_hour: number; duration: number; }) => any
+```
+
+设定静默时间（单位：小时），begin_hour:0-23, duration: 持续小时
+
+| Param         | Type                                                   |
+| ------------- | ------------------------------------------------------ |
+| **`options`** | <code>{ begin_hour: number; duration: number; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### isPushTurnedOn()
+
+```typescript
+isPushTurnedOn() => any
+```
+
+查询推送是否开启
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### areNotificationsEnabled()
+
+```typescript
+areNotificationsEnabled() => any
+```
+
+系统通知权限是否开启
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### openNotification()
+
+```typescript
+openNotification() => any
+```
+
+打开系统通知设置页
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### setHwBadgeNum(...)
+
+```typescript
+setHwBadgeNum(options: { num: number; }) => any
+```
+
+设置华为角标
+
+| Param         | Type                          |
+| ------------- | ----------------------------- |
+| **`options`** | <code>{ num: number; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### setOPPOBadgeNum(...)
+
+```typescript
+setOPPOBadgeNum(options: { num: number; }) => any
+```
+
+设置 OPPO 角标
+
+| Param         | Type                          |
+| ------------- | ----------------------------- |
+| **`options`** | <code>{ num: number; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### setVivoAppBadgeNum(...)
+
+```typescript
+setVivoAppBadgeNum(options: { num: number; }) => any
+```
+
+设置 vivo 角标
+
+| Param         | Type                          |
+| ------------- | ----------------------------- |
+| **`options`** | <code>{ num: number; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### addListener('onReceiveClientId', ...)
+
+```typescript
+addListener(eventName: 'onReceiveClientId', listenerFunc: (data: { client_id?: string; online?: boolean; }) => void) => any
+```
+
+添加事件监听（Capacitor 自动注入类型）
+
+| Param              | Type                                                                      |
+| ------------------ | ------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onReceiveClientId'</code>                                          |
+| **`listenerFunc`** | <code>(data: { client_id?: string; online?: boolean; }) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### addListener('onReceiveMessageData', ...)
+
+```typescript
+addListener(eventName: 'onReceiveMessageData', listenerFunc: (data: any) => void) => any
+```
+
+| Param              | Type                                |
+| ------------------ | ----------------------------------- |
+| **`eventName`**    | <code>'onReceiveMessageData'</code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### addListener('localNotificationReceived', ...)
+
+```typescript
+addListener(eventName: 'localNotificationReceived', listenerFunc: (data: any) => void) => any
+```
+
+| Param              | Type                                     |
+| ------------------ | ---------------------------------------- |
+| **`eventName`**    | <code>'localNotificationReceived'</code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>      |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### addListener(string, ...)
+
+```typescript
+addListener(eventName: string, listenerFunc: (data: any) => void) => any
+```
+
+| Param              | Type                                |
+| ------------------ | ----------------------------------- |
+| **`eventName`**    | <code>string</code>                 |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### Interfaces
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                      |
+| ------------ | ------------------------- |
+| **`remove`** | <code>() =&gt; any</code> |
+
+</docgen-api>

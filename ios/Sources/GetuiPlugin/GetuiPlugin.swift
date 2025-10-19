@@ -6,7 +6,12 @@ import Capacitor
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(GetuiPlugin)
-public class GetuiPlugin: CAPPlugin {
+public class GetuiPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "GetuiPlugin"
+    public let jsName = "Getui"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise)
+    ]
     private let implementation = Getui()
 
     @objc func echo(_ call: CAPPluginCall) {

@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.yufu.plugin.getui">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
 
   <queries>
     <intent>
@@ -31,9 +31,9 @@
 
   <application android:allowBackup="true" android:label="@string/app_name" android:usesCleartextTraffic="true" tools:ignore="GoogleAppIndexingWarning" tools:targetApi="m">
 
-    <service android:name="com.yufu.plugin.getui.GetuiPushService" android:exported="false" android:label="PushService" android:process=":pushservice" />
+    <service android:name="com.vaecebyz.plugin.capacitor.getui.GetuiPushService" android:exported="false" android:label="PushService" android:process=":pushservice" />
 
-    <service android:name="com.yufu.plugin.getui.GetuiIntentService" />
+    <service android:name="com.vaecebyz.plugin.capacitor.getui.GetuiIntentService" />
 
     <meta-data android:name="GETUI_APPID" android:value="${GETUI_APPID}" tools:replace="android:value" />
   </application>

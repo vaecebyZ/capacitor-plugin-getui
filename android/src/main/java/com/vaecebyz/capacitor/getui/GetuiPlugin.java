@@ -1,4 +1,4 @@
-package com.yufu.plugin.getui;
+package com.vaecebyz.capacitor.getui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,7 +13,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.igexin.sdk.PushConsts;
 import com.igexin.sdk.PushManager;
 import com.igexin.sdk.Tag;
-
+import com.getcapacitor.Logger;
 import org.json.JSONException;
 
 @CapacitorPlugin(name = "Getui")
@@ -29,6 +29,7 @@ public class GetuiPlugin extends Plugin {
   @Override
   public void load() {
     super.load();
+    Logger.info("GetuiPlugin loaded");
     staticBridge = this.bridge;
     staticContext = getActivity();
     pushManager = PushManager.getInstance();
