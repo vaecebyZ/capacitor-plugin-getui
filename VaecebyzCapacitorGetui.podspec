@@ -13,5 +13,9 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}'
   s.ios.deployment_target = '14.0'
   s.dependency 'Capacitor'
+  s.dependency 'GTSDK'
+  s.dependency 'GTCommonSDK', '3.1.10.0-noidfa'
+  s.dependency 'GTExtensionSDK'
+  s.static_framework = true
   s.swift_version = '5.1'
 end
