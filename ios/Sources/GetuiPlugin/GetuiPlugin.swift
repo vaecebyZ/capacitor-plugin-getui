@@ -4,6 +4,7 @@ import GTCommonSDK
 import GTExtensionSDK
 import GTSDK
 import UserNotifications
+import UIKit
 
 @objc(GetuiPlugin)
 public class GetuiPlugin: CAPPlugin, CAPBridgedPlugin, GeTuiSdkDelegate, UNUserNotificationCenterDelegate {
@@ -11,8 +12,16 @@ public class GetuiPlugin: CAPPlugin, CAPBridgedPlugin, GeTuiSdkDelegate, UNUserN
     public let jsName = "Getui"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "initSdk", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getClientId", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "init", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getVersion", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getClientId", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setTag", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "turnOnPush", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "turnOffPush", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setSilentTime", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isPushTurnedOn", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "areNotificationsEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "openNotification", returnType: CAPPluginReturnPromise)
     ]
     
     private var clientId: String?
@@ -20,98 +29,140 @@ public class GetuiPlugin: CAPPlugin, CAPBridgedPlugin, GeTuiSdkDelegate, UNUserN
     private var appKey: String?
     private var appSecret: String?
 
-    // MARK: - 生命周期
     public override func load() {
         super.load()
         self.appId = getConfigValue("iosAppId") as? String
         self.appKey = getConfigValue("iosAppKey") as? String
         self.appSecret = getConfigValue("iosAppSecret") as? String
-        NotificationCenter.default.addObserver(
-            self,
+        UNUserNotificationCenter.current().delegate = self
+        NotificationCenter.default.addObserver(self,
             selector: #selector(onClientIdReceived(_:)),
             name: Notification.Name("GetuiDidRegisterClient"),
             object: nil
         )
     }
-    
-    // MARK: - 插件方法
-    @objc func initSdk(_ call: CAPPluginCall) {
-        guard let appId = self.appId,
-            let appKey = self.appKey,
-            let appSecret = self.appSecret else {
-            call.reject("iOS 个推配置缺失，请在 capacitor.config.json 中配置 Getui.iosAppId / iosAppKey / iosAppSecret")
-            return
-        }
-        
-        print("[GetuiPlugin] 初始化个推 SDK: \(appId)")
-        
-        GeTuiSdk.start(
-            withAppId: appId,
-            appKey: appKey,
-            appSecret: appSecret,
-            delegate: self,
-            launchingOptions: nil
-        )
-        
-        // 注册通知
-        GeTuiSdk.registerRemoteNotification([.alert, .sound, .badge])
-        UNUserNotificationCenter.current().delegate = self
-        
-        call.resolve(["status": "started"])
-    }
-    
-    @objc func getClientId(_ call: CAPPluginCall) {
-        if let cid = clientId {
-            call.resolve(["clientId": cid])
-        } else {
-            call.reject("ClientId not available yet")
-        }
-    }
-    
+
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
         call.resolve(["value": value])
     }
-    
-    // MARK: - 个推回调
+
+    @objc func `init`(_ call: CAPPluginCall) {
+        guard let appId = appId, let appKey = appKey, let appSecret = appSecret else {
+            call.reject("缺少 iOS Getui 配置")
+            return
+        }
+        GeTuiSdk.start(withAppId: appId, appKey: appKey, appSecret: appSecret, delegate: self, launchingOptions: nil)
+        GeTuiSdk.registerRemoteNotification([.alert, .sound, .badge])
+        let version = GeTuiSdk.version()
+        let cid = GeTuiSdk.clientId()
+        call.resolve(["version": version, "client_id": cid ?? NSNull()])
+    }
+
+    @objc func getVersion(_ call: CAPPluginCall) {
+        call.resolve(["version": GeTuiSdk.version()])
+    }
+
+    @objc func getClientId(_ call: CAPPluginCall) {
+        call.resolve(["client_id": GeTuiSdk.clientId() ?? NSNull()])
+    }
+
+    @objc func setTag(_ call: CAPPluginCall) {
+        var tagsArray: [String] = []
+        if let tags = call.getArray("tags") {
+            for t in tags {
+                if let s = t as? String { tagsArray.append(s) }
+            }
+        }
+        if tagsArray.isEmpty {
+            call.reject("tags 参数无效")
+            return
+        }
+        let sn = call.getString("sn") ?? UUID().uuidString
+        let submitted = GeTuiSdk.setTags(tagsArray)
+        let submittedWithSn = GeTuiSdk.setTags(tagsArray, andSequenceNum: sn)
+        if submitted || submittedWithSn {
+            call.resolve(["resultCode": 0, "resultMessage": "设置标签成功"])
+        } else {
+            call.reject("设置标签请求失败")
+        }
+    }
+
+    @objc func turnOnPush(_ call: CAPPluginCall) {
+        GeTuiSdk.setPushModeForOff(false)
+        call.resolve(["state": true])
+    }
+
+    @objc func turnOffPush(_ call: CAPPluginCall) {
+        GeTuiSdk.setPushModeForOff(true)
+        call.resolve(["state": false])
+    }
+
+    @objc func setSilentTime(_ call: CAPPluginCall) {
+        let beginHour = call.getInt("begin_hour", 0) ?? 0
+        let duration = call.getInt("duration", 0) ?? 0
+        if duration > 0 {
+            GeTuiSdk.setPushModeForOff(true)
+            UserDefaults.standard.setValue(["begin_hour": beginHour, "duration": duration], forKey: "GetuiSilentTime")
+            call.resolve(["state": true])
+        } else {
+            GeTuiSdk.setPushModeForOff(false)
+            UserDefaults.standard.removeObject(forKey: "GetuiSilentTime")
+            call.resolve(["state": true])
+        }
+    }
+
+    @objc func isPushTurnedOn(_ call: CAPPluginCall) {
+        let isOn: Bool = (GeTuiSdk.status() == .started)
+        call.resolve(["state": isOn])
+    }
+
+    @objc func areNotificationsEnabled(_ call: CAPPluginCall) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                call.resolve(["state": settings.authorizationStatus == .authorized])
+            }
+        }
+    }
+
+    @objc func openNotification(_ call: CAPPluginCall) {
+        if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+        call.resolve()
+    }
+
     public func geTuiSdkDidRegisterClient(_ clientId: String) {
-        print("[Getui] Register ClientID: \(clientId)")
-        self.clientId = clientId
-        notifyListeners("onClientId", data: ["clientId": clientId])
+        notifyListeners("onReceiveClientId", data: ["client_id": clientId])
     }
-    
-    public func geTuiSdkDidOccurError(_ error: Error) {
-        print("[Getui] Error: \(error.localizedDescription)")
+
+    public func geTuiSdkDidOccurError(_ error: NSError) {
+        notifyListeners("onError", data: ["error": error.localizedDescription])
     }
-    
-    public func geTuiSdkDidReceiveSlience(
-        _ userInfo: [AnyHashable : Any],
-        fromGetui: Bool,
-        offLine: Bool,
-        appId: String?,
-        taskId: String?,
-        msgId: String?,
-        fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)? = nil
-    ) {
-        print("[Getui] Silent Message: \(userInfo)")
+
+    public func geTuiSdkDidReceiveSlience(_ userInfo: [AnyHashable : Any],
+                                          fromGetui: Bool,
+                                          offLine: Bool,
+                                          appId: String?,
+                                          taskId: String?,
+                                          msgId: String?,
+                                          fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?) {
+        notifyListeners("onReceiveMessageData", data: userInfo as? [String: Any] ?? [:])
         completionHandler?(.noData)
     }
-    
-    // MARK: - 通知展示回调
-    public func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        completionHandler([.badge, .sound, .alert])
+
+    public func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                       willPresent notification: UNNotification,
+                                       withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let data = notification.request.content.userInfo as? [String: Any] ?? [:]
+        notifyListeners("localNotificationReceived", data: data)
+        completionHandler([.alert, .sound, .badge])
     }
-    
-    // MARK: - ClientId通知监听
+
     @objc private func onClientIdReceived(_ notification: Notification) {
-        if let userInfo = notification.userInfo,
-           let cid = userInfo["clientId"] as? String {
+        if let cid = notification.userInfo?["clientId"] as? String {
             clientId = cid
-            notifyListeners("onClientId", data: ["clientId": cid])
+            notifyListeners("onReceiveClientId", data: ["client_id": cid])
         }
     }
 }

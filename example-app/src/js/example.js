@@ -5,7 +5,7 @@ window.testEcho = () => {
 
   console.log(inputValue);
   Getui.echo();
-  Getui.initSdk();
+  Getui.init();
   console.log('Getui SDK started');
 
   // 监听CID事件
